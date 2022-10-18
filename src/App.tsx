@@ -30,13 +30,13 @@ function App() {
   return (
     <Layout>
       <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background: "#fff", boxShadow: "1px solid #f0f0f0" }}>
-        <Row>
+        <Row style={{ padding: "0 20px" }}>
           <Col span={2}>
             <div className="logo" >
 
             </div>
           </Col>
-          <Col span={20}>
+          <Col span={18}>
             <Menu
               items={items}
               multiple={false}
@@ -48,7 +48,7 @@ function App() {
                 })
               }} />
           </Col>
-          <Col span={2}>
+          <Col span={4}>
             <Space >
               <Button type='link' onClick={() => {
 

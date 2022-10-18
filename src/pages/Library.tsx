@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { Col, List, Row, Tree, Card, Button } from 'antd'
+import { Col, List, Row, Tree, Card, Button, Image } from 'antd'
 import { LikeOutlined, StarOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
-import { getFamilyCategoryFetch, getFamilyPageByKeyword } from '../services/family'
+import { getFamilyCategoryFetch, getFamilyPageByKeywordFetch } from '../services/family'
 import { Family } from "../models/family";
-import Item from 'antd/lib/list/Item';
 const { Meta } = Card;
 
 function mockdatas() {
@@ -38,8 +37,8 @@ function Library() {
         }
     }
 
-    async function getFamilyPage(keyword: string | undefined, pageIndex: number, pageSize: number) {
-        var httpResponse = await getFamilyPageByKeyword(keyword, pageIndex, pageSize);
+    async function getFamilyPageByKeyword(keyword: string | undefined, pageIndex: number, pageSize: number) {
+        var httpResponse = await getFamilyPageByKeywordFetch(keyword, pageIndex, pageSize);
         if (httpResponse.success) {
             var familyPage = httpResponse.response;
             setFamilies(familyPage.data);
@@ -47,46 +46,58 @@ function Library() {
         }
     }
 
+    async function getFamilyPageByCategory(categoryId: number | undefined, pageIndex: number, pageSize: number) {
+
+    }
 
     useEffect(() => {
         getFamilyCategories();
-        //getFamilyPage(undefined, pageIndex, 30);
+        //getFamilyPageByKeyword(undefined, pageIndex, 30);
         var _families = mockdatas();
         setFamilies(_families);
-    }, [])
+    }, [pageIndex])
     return (
-        <div style={{ height: "1000px", padding: "40px 100px" }}>
+        <div style={{ minHeight: "1000px", padding: "40px 100px" }}>
             <Row>
                 <Col span={6}>
                     <Tree
                         showLine={true}
                         treeData={treeDatas}
-                        onSelect={(keys, info) => {
-                            console.log(info)
+                        onSelect={(keys) => {
+
                         }}
                     />
                 </Col>
                 <Col span={1} />
                 <Col span={17}>
                     <List
-                        style={{ height: "1000px" }}
+                        style={{ minHeight: "1000px" }}
                         itemLayout='horizontal'
                         dataSource={families}
+                        split
+                        rowKey={(family) => family.id}
                         grid={{
-                            column: 5,
                             gutter: 16,
                             xs: 2,
-                            sm: 3,
+                            sm: 2,
+                            lg: 3,
+                            md: 3,
+                            xl: 3,
                             xxl: 5
                         }}
                         pagination={
                             {
-                                current: pageIndex
+                                current: pageIndex,
+                                pageSize: 30,
+                                pageSizeOptions: [30],
+                                onChange(page) {
+                                    setPageIndex(page);
+                                },
                             }
                         }
                         renderItem={(item) =>
                         (
-                            <List.Item key={item.id}>
+                            <List.Item>
                                 <Card
                                     hoverable
                                     style={{ width: 200, height: 200 }}

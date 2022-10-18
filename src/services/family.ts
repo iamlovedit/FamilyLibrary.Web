@@ -24,7 +24,7 @@ export const getFamilyCategoryFetch=async () => {
  return httpResponse;
 }
 
-export const getFamilyPageByKeyword=async(keyword:string|undefined,pageIndex:number,pageSize:number)=>{
+export const getFamilyPageByKeywordFetch=async(keyword:string|undefined,pageIndex:number,pageSize:number)=>{
     var url=keyword?`${baseUrl}/family/?keyword=${keyword}&pageIndex=${pageIndex}&pageSize=${pageSize}`:
         `${baseUrl}/family/?pageIndex=${pageIndex}&pageSize=${pageSize}`
     var response=await fetch(url,{
@@ -33,4 +33,8 @@ export const getFamilyPageByKeyword=async(keyword:string|undefined,pageIndex:num
     })
  var httpResponse=(await response.json()) as HttpResponse<PageData<Family>>
  return httpResponse;
+}
+
+export const getFamilyPageByCategoryFetch=async(category:number|0,pageIndex:number,pageSize:number)=>{
+
 }
