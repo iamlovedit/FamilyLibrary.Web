@@ -29,7 +29,7 @@ function App() {
 
   return (
     <Layout>
-      <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background: "#fff" }}>
+      <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background: "#fff", boxShadow: "1px solid #f0f0f0" }}>
         <Row>
           <Col span={2}>
             <div className="logo" >
@@ -70,7 +70,7 @@ function App() {
           </Col>
         </Row>
       </Header>
-      <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64 }}>
+      <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, background: "white" }}>
         <div className="site-layout-background" style={{ padding: 24, minHeight: 1200 }}>
           {elements}
         </div>
