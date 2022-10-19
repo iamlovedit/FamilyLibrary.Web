@@ -8,5 +8,6 @@ export class Family {
     updateTime:string;
     version:number;
     fileId:string;
+    imageUrl:string;
     category:FamilyCategory|undefined
 }

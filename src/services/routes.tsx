@@ -2,6 +2,7 @@ import { Navigate } from "react-router-dom";
 import Library from "../pages/Library";
 import Register from "../pages/Register";
 import Plugin from "../pages/Plugin";
+import FamilyDetail from "../pages/FamilyDetail";
 
 const routers = [
   {
@@ -15,8 +16,11 @@ const routers = [
   {
     path: '/register',
     element: <Register />
-  }
-  ,
+  },
+  {
+    path: '/family',
+    element: <FamilyDetail />
+  },
   {
     path: '/*',
     element: <Navigate to='/' />

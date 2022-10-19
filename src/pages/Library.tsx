@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from "react-router-dom";
 import { Col, List, Row, Tree, Card, Button, Image } from 'antd'
-import { LikeOutlined, StarOutlined } from '@ant-design/icons';
+import { LikeOutlined, StarOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
-import { getFamilyCategoryFetch, getFamilyPageByKeywordFetch } from '../services/family'
+import { getFamilyCategoryFetch, getFamilyPageByKeywordFetch, getFamilyPageByCategoryFetch, getFamilyFileUrlFetch } from '../services/family'
 import { Family } from "../models/family";
 const { Meta } = Card;
+
 
 function mockdatas() {
     const families: Family[] = [];
@@ -16,6 +18,7 @@ function mockdatas() {
             createTime: Date.now().toString(),
             updateTime: Date.now().toString(),
             version: 2020,
+            imageUrl: "1",
             fileId: `file ${index}`,
             category: undefined
         }
@@ -25,20 +28,22 @@ function mockdatas() {
 }
 
 function Library() {
+    const navigate = useNavigate();
     const [treeDatas, setTreeDatas] = useState<DataNode[]>([]);
     const [families, setFamilies] = useState<Family[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
-
     async function getFamilyCategories() {
-        var httpResponse = await getFamilyCategoryFetch();
+        let httpResponse = await getFamilyCategoryFetch();
         if (httpResponse.success) {
             var familyCategories = httpResponse.response;
             setTreeDatas(familyCategories)
         }
     }
 
+
+
     async function getFamilyPageByKeyword(keyword: string | undefined, pageIndex: number, pageSize: number) {
-        var httpResponse = await getFamilyPageByKeywordFetch(keyword, pageIndex, pageSize);
+        let httpResponse = await getFamilyPageByKeywordFetch(keyword, pageIndex, pageSize);
         if (httpResponse.success) {
             var familyPage = httpResponse.response;
             setFamilies(familyPage.data);
@@ -46,8 +51,20 @@ function Library() {
         }
     }
 
-    async function getFamilyPageByCategory(categoryId: number | undefined, pageIndex: number, pageSize: number) {
+    async function getFamilyPageByCategory(categoryId: number | 0, pageIndex: number, pageSize: number) {
+        let httpResponse = await getFamilyPageByCategoryFetch(categoryId, pageIndex, pageSize);
+        if (httpResponse.success) {
+            var familyPage = httpResponse.response;
+            setFamilies(familyPage.data);
+        }
+    }
 
+    async function getFamilyImage(fileKey: string) {
+        let httpResponse = await getFamilyFileUrlFetch(fileKey);
+        if (httpResponse.success) {
+            var url = httpResponse.response;
+            return url;
+        }
     }
 
     useEffect(() => {
@@ -59,31 +76,26 @@ function Library() {
     return (
         <div style={{ minHeight: "1000px", padding: "40px 100px" }}>
             <Row>
-                <Col span={6}>
+                <Col span={3}>
                     <Tree
                         showLine={true}
                         treeData={treeDatas}
-                        onSelect={(keys) => {
+                        onSelect={(key) => {
 
                         }}
                     />
                 </Col>
                 <Col span={1} />
-                <Col span={17}>
+                <Col span={20}>
                     <List
-                        style={{ minHeight: "1000px" }}
+                        style={{ minHeight: "1000px", width: "1200px" }}
                         itemLayout='horizontal'
                         dataSource={families}
                         split
                         rowKey={(family) => family.id}
                         grid={{
-                            gutter: 16,
-                            xs: 2,
-                            sm: 2,
-                            lg: 3,
-                            md: 3,
-                            xl: 3,
-                            xxl: 5
+                            gutter: 20,
+                            column: 5
                         }}
                         pagination={
                             {
@@ -97,12 +109,28 @@ function Library() {
                         }
                         renderItem={(item) =>
                         (
-                            <List.Item>
-                                <Card
-                                    hoverable
-                                    style={{ width: 200, height: 200 }}
-                                >
-                                    <Meta title={item.name} description="www.instagram.com" />
+                            <List.Item onClick={(event) => {
+                                console.log(event)
+                                navigate('family', {
+
+                                })
+                            }}>
+                                <Card style={{ width: "220px", height: "280px" }}
+                                    cover={
+                                        <img
+                                            height={160}
+                                            alt={item.name}
+                                            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                        />
+                                    }
+                                    actions={[
+                                        <LikeOutlined />,
+                                        <StarOutlined />,
+                                        <DownloadOutlined />
+                                    ]}
+                                    hoverable>
+                                    <Meta title={item.name}
+                                        style={{ height: "30px" }} />
                                 </Card>
                             </List.Item>
                         )}
