@@ -40,8 +40,6 @@ function Library() {
         }
     }
 
-
-
     async function getFamilyPageByKeyword(keyword: string | undefined, pageIndex: number, pageSize: number) {
         let httpResponse = await getFamilyPageByKeywordFetch(keyword, pageIndex, pageSize);
         if (httpResponse.success) {
@@ -69,9 +67,9 @@ function Library() {
 
     useEffect(() => {
         getFamilyCategories();
-        //getFamilyPageByKeyword(undefined, pageIndex, 30);
-        var _families = mockdatas();
-        setFamilies(_families);
+        getFamilyPageByKeyword(undefined, pageIndex, 30);
+        // var _families = mockdatas();
+        // setFamilies(_families);
     }, [pageIndex])
     return (
         <div style={{ minHeight: "1000px", padding: "40px 100px" }}>
@@ -107,29 +105,53 @@ function Library() {
                                 },
                             }
                         }
-                        renderItem={(item) =>
+                        renderItem={(family) =>
                         (
                             <List.Item onClick={(event) => {
-                                console.log(event)
-                                navigate('family', {
+                                console.log(event);
+                                // navigate('family', {
 
-                                })
+                                // })
                             }}>
+                                {/* <div style={{ width: "220px", height: "280px" }}>
+                                    <div>
+                                        <Image
+                                            width={220}
+                                            height={220}
+                                            preview={false}
+                                            alt={family.name}
+                                            src={family.imageUrl} />
+                                    </div>
+                                    <div style={{ height: "30px" }}>
+
+                                    </div>
+                                    <div>
+                                        {family.name}
+                                    </div>
+                                </div> */}
                                 <Card style={{ width: "220px", height: "280px" }}
                                     cover={
-                                        <img
+                                        <Image
                                             height={160}
-                                            alt={item.name}
-                                            src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
+                                            alt={family.name}
+                                            src={family.imageUrl}
+                                            preview={false}
                                         />
                                     }
                                     actions={[
-                                        <LikeOutlined />,
-                                        <StarOutlined />,
-                                        <DownloadOutlined />
+                                        <LikeOutlined
+                                            onClick={(event) => {
+                                                console.log(event);
+                                            }} />,
+                                        <StarOutlined onClick={(event) => {
+                                            console.log(event);
+                                        }} />,
+                                        <DownloadOutlined onClick={(event) => {
+                                            console.log(event);
+                                        }} />
                                     ]}
                                     hoverable>
-                                    <Meta title={item.name}
+                                    <Meta title={family.name}
                                         style={{ height: "30px" }} />
                                 </Card>
                             </List.Item>
