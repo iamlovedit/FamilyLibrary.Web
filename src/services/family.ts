@@ -55,3 +55,14 @@ export const getFamilyFileUrlFetch=async(fileKey:string)=>{
     var httpResponse=(await response.json()) as HttpResponse<string>
     return httpResponse;
 }
+
+
+export const getFamilyDetailFetch =async(id:number)=>{
+    var url=`${baseUrl}/family/${id}`;
+    var response=await fetch(url,{
+        mode:CORS,
+        method:GETMETHOD
+    })
+    var httpResponse=(await response.json()) as HttpResponse<Family>
+    return httpResponse;
+}

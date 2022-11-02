@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from "react-router-dom";
-import { Col, List, Row, Tree, Card, Button, Image } from 'antd'
+import { Col, List, Row, Tree, Card, Button, Image, Modal } from 'antd'
 import { LikeOutlined, StarOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import { getFamilyCategoryFetch, getFamilyPageByKeywordFetch, getFamilyPageByCategoryFetch, getFamilyFileUrlFetch } from '../services/family'
@@ -32,6 +32,9 @@ function Library() {
     const [treeDatas, setTreeDatas] = useState<DataNode[]>([]);
     const [families, setFamilies] = useState<Family[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
+    const [modalOpen, setModelOpen] = useState<boolean>(false);
+
+
     async function getFamilyCategories() {
         let httpResponse = await getFamilyCategoryFetch();
         if (httpResponse.success) {
@@ -65,6 +68,11 @@ function Library() {
         }
     }
 
+    function showVersions(id: number) {
+        setModelOpen(true);
+    }
+
+
     useEffect(() => {
         getFamilyCategories();
         getFamilyPageByKeyword(undefined, pageIndex, 30);
@@ -79,7 +87,7 @@ function Library() {
                         showLine={true}
                         treeData={treeDatas}
                         onSelect={(key) => {
-
+                            console.log(key);
                         }}
                     />
                 </Col>
@@ -107,29 +115,11 @@ function Library() {
                         }
                         renderItem={(family) =>
                         (
-                            <List.Item onClick={(event) => {
-                                console.log(event);
-                                // navigate('family', {
-
-                                // })
+                            <List.Item onClick={() => {
+                                navigate(`family/${family.id}`)
                             }}>
-                                {/* <div style={{ width: "220px", height: "280px" }}>
-                                    <div>
-                                        <Image
-                                            width={220}
-                                            height={220}
-                                            preview={false}
-                                            alt={family.name}
-                                            src={family.imageUrl} />
-                                    </div>
-                                    <div style={{ height: "30px" }}>
-
-                                    </div>
-                                    <div>
-                                        {family.name}
-                                    </div>
-                                </div> */}
-                                <Card style={{ width: "220px", height: "280px" }}
+                                <Card style={{ width: "220px" }}
+                                    hoverable
                                     cover={
                                         <Image
                                             height={160}
@@ -141,17 +131,21 @@ function Library() {
                                     actions={[
                                         <LikeOutlined
                                             onClick={(event) => {
-                                                console.log(event);
+                                                event.stopPropagation();
+
                                             }} />,
                                         <StarOutlined onClick={(event) => {
-                                            console.log(event);
+                                            event.stopPropagation();
+
                                         }} />,
                                         <DownloadOutlined onClick={(event) => {
-                                            console.log(event);
+                                            event.stopPropagation();
+                                            showVersions(family.id)
                                         }} />
                                     ]}
-                                    hoverable>
+                                >
                                     <Meta title={family.name}
+                                        description={`上传时间 ${family.createTime}`}
                                         style={{ height: "30px" }} />
                                 </Card>
                             </List.Item>
@@ -159,6 +153,28 @@ function Library() {
                     />
                 </Col>
             </Row>
+
+            <Modal
+                open={modalOpen}
+                onCancel={() => {
+                    setModelOpen(false);
+                }}
+                footer={
+                    [
+
+                    ]
+                }
+            >
+                <List
+                    renderItem={(item) => (
+                        <List.Item>
+                            <Button type='link'
+                            />
+                        </List.Item>
+                    )}>
+
+                </List>
+            </Modal>
         </div>
     )
 }

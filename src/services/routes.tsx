@@ -18,7 +18,7 @@ const routers = [
     element: <Register />
   },
   {
-    path: '/family',
+    path: '/family/:id',
     element: <FamilyDetail />
   },
   {
