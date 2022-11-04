@@ -3,6 +3,7 @@ import Library from "../pages/Library";
 import Register from "../pages/Register";
 import Plugin from "../pages/Plugin";
 import FamilyDetail from "../pages/FamilyDetail";
+import Login from "../pages/Login";
 
 const routers = [
   {
@@ -16,6 +17,10 @@ const routers = [
   {
     path: '/register',
     element: <Register />
+  },
+  {
+    path: '/login',
+    element: <Login />
   },
   {
     path: '/family/:id',

@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate, useParams } from "react-router-dom";
-import { Col, List, Row, Tree, Card, Button, Image, Modal } from 'antd'
+import { useNavigate } from "react-router-dom";
+import { Col, List, Row, Tree, Card, Button, Image, Modal, message } from 'antd'
 import { LikeOutlined, StarOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
-import { getFamilyCategoryFetch, getFamilyPageByKeywordFetch, getFamilyPageByCategoryFetch, getFamilyFileUrlFetch } from '../services/family'
+import {
+    getFamilyCategoryFetch,
+    getFamilyPageByKeywordFetch,
+    getFamilyPageByCategoryFetch,
+    getFamilyVersionsFetch,
+    getFamilyFileByIdFetch
+} from '../services/family'
 import { Family } from "../models/family";
 const { Meta } = Card;
 
@@ -33,7 +39,8 @@ function Library() {
     const [families, setFamilies] = useState<Family[]>([]);
     const [pageIndex, setPageIndex] = useState<number>(1);
     const [modalOpen, setModelOpen] = useState<boolean>(false);
-
+    const [familyVersions, setFamilyVersions] = useState<number[] | undefined>(undefined);
+    const [activeFamily, setActiveFamily] = useState<Family | undefined>(undefined);
 
     async function getFamilyCategories() {
         let httpResponse = await getFamilyCategoryFetch();
@@ -60,18 +67,35 @@ function Library() {
         }
     }
 
-    async function getFamilyImage(fileKey: string) {
-        let httpResponse = await getFamilyFileUrlFetch(fileKey);
+
+    async function showVersions(id: number) {
+        setModelOpen(true);
+        var versions = await getFamilyVersionsById(id);
+        setFamilyVersions(versions);
+    }
+
+    async function getFamilyVersionsById(id: number) {
+        let httpResponse = await getFamilyVersionsFetch(id);
         if (httpResponse.success) {
-            var url = httpResponse.response;
-            return url;
+            var versions = httpResponse.response;
+            return versions;
         }
     }
-
-    function showVersions(id: number) {
-        setModelOpen(true);
+    async function getFamilyFile(id: number, version: number) {
+        let httpResponse = await getFamilyFileByIdFetch(id, version);
+        if (httpResponse) {
+            const link = document.createElement("a");
+            let blob = new Blob([httpResponse], {
+                type: ".rfa",
+            });
+            link.href = URL.createObjectURL(blob);
+            link.download = `${activeFamily?.name}.rfa`;
+            link.click();
+        }
+        else {
+            message.error("获取族文件失败")
+        }
     }
-
 
     useEffect(() => {
         getFamilyCategories();
@@ -141,6 +165,7 @@ function Library() {
                                         <DownloadOutlined onClick={(event) => {
                                             event.stopPropagation();
                                             showVersions(family.id)
+                                            setActiveFamily(family);
                                         }} />
                                     ]}
                                 >
@@ -155,28 +180,35 @@ function Library() {
             </Row>
 
             <Modal
+                width={"400px"}
                 open={modalOpen}
                 onCancel={() => {
                     setModelOpen(false);
                 }}
+                title={activeFamily?.name}
                 footer={
                     [
-
+                        <p>
+                            免费用户每天只能下载10个
+                        </p>
                     ]
                 }
             >
                 <List
-                    renderItem={(item) => (
-                        <List.Item>
-                            <Button type='link'
-                            />
+                    dataSource={familyVersions}
+                    grid={{ gutter: 8, column: 4 }}
+                    renderItem={(version) => (
+                        <List.Item key={version}>
+                            <Button onClick={() => {
+                                getFamilyFile(activeFamily?.id as number, version)
+                            }}>
+                                {version}
+                            </Button>
                         </List.Item>
                     )}>
-
                 </List>
             </Modal>
         </div>
     )
 }
-
 export default Library

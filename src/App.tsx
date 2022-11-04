@@ -61,10 +61,10 @@ function App() {
                 反馈
               </Button>
               <Button type='link' onClick={() => {
-                navigate('register')
+                navigate('login')
                 setPathKey('');
               }}>
-                注册
+                登录
               </Button>
             </Space>
           </Col>

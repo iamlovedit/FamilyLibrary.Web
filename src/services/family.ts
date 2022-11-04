@@ -66,3 +66,30 @@ export const getFamilyDetailFetch =async(id:number)=>{
     var httpResponse=(await response.json()) as HttpResponse<Family>
     return httpResponse;
 }
+
+export const getFamilyVersionsFetch=async(id:number)=>{
+    var url=`${baseUrl}/family/versions/${id}`;
+    var response=await fetch(url,{
+        mode:CORS,
+        method:GETMETHOD
+    })
+    var httpResponse=(await response.json()) as HttpResponse<number[]>
+    return httpResponse;
+}
+
+export const getFamilyFileByIdFetch=async(id:number,version:number)=>{
+    var url=`${baseUrl}/family/${id}/${version}`;
+    try {
+        var response=await fetch(url,{
+        mode:CORS,
+        method:GETMETHOD,
+        })
+        const {status}=response;
+    if (status===200) {
+        return response.blob();
+    }
+    } catch (error) {
+        console.log(error);
+    }
+     return undefined;
+}
