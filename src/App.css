@@ -1,0 +1,20 @@
+.iconContainer{
+    display: inline;
+    position:absolute;
+    left: 2%;
+    float: left;
+}
+
+.navigateContainer{
+    display: inline;
+    position: relative;
+    float: left;
+    margin-left: 20%;
+}
+
+.extensContainer{
+    display: inline;
+    position: absolute;
+    float:left;
+    right: 10%;
+}

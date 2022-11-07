@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from "react-router-dom";
-import { Col, List, Row, Tree, Card, Button, Image, Modal, message } from 'antd'
+import { Col, List, Row, Tree, Card, Button, Image, Modal, message, Input, Tag, Select } from 'antd'
 import { LikeOutlined, StarOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
 import {
@@ -11,8 +11,9 @@ import {
     getFamilyFileByIdFetch
 } from '../services/family'
 import { Family } from "../models/family";
-const { Meta } = Card;
 
+const { Meta } = Card;
+const { Search } = Input;
 
 function mockdatas() {
     const families: Family[] = [];
@@ -34,6 +35,7 @@ function mockdatas() {
 }
 
 function Library() {
+
     const navigate = useNavigate();
     const [treeDatas, setTreeDatas] = useState<DataNode[]>([]);
     const [families, setFamilies] = useState<Family[]>([]);
@@ -41,6 +43,8 @@ function Library() {
     const [modalOpen, setModelOpen] = useState<boolean>(false);
     const [familyVersions, setFamilyVersions] = useState<number[] | undefined>(undefined);
     const [activeFamily, setActiveFamily] = useState<Family | undefined>(undefined);
+    const [searchValue, setSearchValue] = useState<string | undefined>(undefined);
+    const [filters, setFilters] = useState<string[]>([]);
 
     async function getFamilyCategories() {
         let httpResponse = await getFamilyCategoryFetch();
@@ -97,12 +101,37 @@ function Library() {
         }
     }
 
+    const handleClose = (removedTag: string) => {
+        const newTags = filters.filter(tag => tag !== removedTag);
+        setFilters(newTags);
+    };
+
+    const mapTags = (tag: string) => {
+        const tagElem = (
+            <Tag
+                closable
+                onClose={e => {
+                    e.preventDefault();
+                    handleClose(tag);
+                }}
+            >
+                {tag}
+            </Tag>
+        );
+        return (
+            <span key={tag} style={{ display: 'inline-block' }}>
+                {tagElem}
+            </span>
+        );
+    };
+
+    const tagChild = filters.map(mapTags);
+
     useEffect(() => {
         getFamilyCategories();
         getFamilyPageByKeyword(undefined, pageIndex, 30);
-        // var _families = mockdatas();
-        // setFamilies(_families);
     }, [pageIndex])
+
     return (
         <div style={{ minHeight: "1000px", padding: "40px 100px" }}>
             <Row>
@@ -110,15 +139,68 @@ function Library() {
                     <Tree
                         showLine={true}
                         treeData={treeDatas}
-                        onSelect={(key) => {
-                            console.log(key);
+                        onSelect={(key, info) => {
+                            const title = info.node.title?.toString() as string
+                            if (searchValue) {
+                                var newFilters = [searchValue]
+                                setFilters([...newFilters, title])
+                            } else {
+                                setFilters([title])
+                            }
                         }}
                     />
                 </Col>
                 <Col span={1} />
                 <Col span={20}>
+                    <div>
+                        <Search
+                            style={{ width: "20%" }}
+                            enterButton
+                            maxLength={16}
+                            placeholder="输入要搜索的族" onSearch={(value) => {
+                                setSearchValue(value)
+                                setFilters([value])
+                            }} />
+                    </div>
+                    <div style={{ marginTop: "20px" }}>
+                        <span style={{ marginBottom: 16 }}>
+                            {tagChild}
+                        </span>
+                        <span style={{ marginLeft: "40px" }}>
+                            <Button style={{ display: "none" }}>
+                                清空筛选
+                            </Button>
+                        </span>
+                        <span style={{ marginLeft: "40px", width: "40%", position: "absolute", right: "0px" }}>
+                            <Select style={{ width: "20%" }}
+                                value="name"
+                                options={
+                                    [
+                                        {
+                                            value: "name",
+                                            label: '按名称'
+                                        },
+                                        {
+                                            value: "download",
+                                            label: '按下载量'
+                                        },
+                                        {
+                                            value: "star",
+                                            label: '按收藏量'
+                                        },
+                                        {
+                                            value: "like",
+                                            label: '按点赞量'
+                                        },
+                                    ]
+                                } />
+                        </span>
+                    </div>
+
                     <List
-                        style={{ minHeight: "1000px", width: "1200px" }}
+                        style={{
+                            minHeight: "1000px", width: "1200px", marginTop: "20px"
+                        }}
                         itemLayout='horizontal'
                         dataSource={families}
                         split
@@ -139,11 +221,13 @@ function Library() {
                         }
                         renderItem={(family) =>
                         (
-                            <List.Item onClick={() => {
-                                navigate(`family/${family.id}`)
-                            }}>
+                            <List.Item
+                                onClick={() => {
+                                    navigate(`family/${family.id}`)
+                                }}>
                                 <Card style={{ width: "220px" }}
                                     hoverable
+
                                     cover={
                                         <Image
                                             height={160}
@@ -154,24 +238,33 @@ function Library() {
                                     }
                                     actions={[
                                         <LikeOutlined
+                                            title='点赞'
                                             onClick={(event) => {
                                                 event.stopPropagation();
 
                                             }} />,
-                                        <StarOutlined onClick={(event) => {
-                                            event.stopPropagation();
-
-                                        }} />,
-                                        <DownloadOutlined onClick={(event) => {
-                                            event.stopPropagation();
-                                            showVersions(family.id)
-                                            setActiveFamily(family);
-                                        }} />
+                                        <StarOutlined
+                                            title='收藏'
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                            }} />,
+                                        <DownloadOutlined
+                                            title='下载'
+                                            onClick={(event) => {
+                                                event.stopPropagation();
+                                                showVersions(family.id)
+                                                setActiveFamily(family);
+                                            }} />
                                     ]}
                                 >
-                                    <Meta title={family.name}
-                                        description={`上传时间 ${family.createTime}`}
-                                        style={{ height: "30px" }} />
+                                    <div>
+                                        <div>
+                                            {family.name}
+                                        </div>
+                                        <div>
+                                            {family.createTime}
+                                        </div>
+                                    </div>
                                 </Card>
                             </List.Item>
                         )}

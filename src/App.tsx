@@ -1,4 +1,4 @@
-import { Layout, Menu, Row, Col, Button, Space } from 'antd';
+import { Layout, Menu, Button, Space } from 'antd';
 import { useRoutes, useNavigate, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import routers from './services/routes';
@@ -29,14 +29,12 @@ function App() {
 
   return (
     <Layout>
-      <Header style={{ position: 'fixed', zIndex: 1, width: '100%', background: "#fff", boxShadow: "1px solid #f0f0f0" }}>
-        <Row style={{ padding: "0 20px" }}>
-          <Col span={2}>
-            <div className="logo" >
-
-            </div>
-          </Col>
-          <Col span={18}>
+      <Header style={{ position: 'fixed', zIndex: 9999, width: '100%', background: "#fff", border: "1px solid #f0f0f0" }}>
+        <div>
+          <div className='iconContainer'>
+            111
+          </div>
+          <div className='navigateContainer' >
             <Menu
               items={items}
               multiple={false}
@@ -47,8 +45,8 @@ function App() {
                   replace: false
                 })
               }} />
-          </Col>
-          <Col span={4}>
+          </div>
+          <div className='extensContainer'>
             <Space >
               <Button type='link' onClick={() => {
 
@@ -67,15 +65,15 @@ function App() {
                 登录
               </Button>
             </Space>
-          </Col>
-        </Row>
+          </div>
+        </div>
       </Header>
-      <Content className="site-layout" style={{ padding: '0 50px', marginTop: 64, background: "white" }}>
-        <div className="site-layout-background" style={{ padding: 24, minHeight: 1200 }}>
+      <Content style={{ marginTop: 64, background: "white" }}>
+        <div style={{ minHeight: 1200, width: "80%", margin: "auto" }}>
           {elements}
         </div>
       </Content>
-      <Footer style={{ textAlign: 'center', position: "relative", width: '100%', backgroundColor: "black", bottom: "0px", marginBottom: 0 }}>
+      <Footer style={{ textAlign: 'center', position: "relative", width: '100%', backgroundColor: "black", bottom: "0px" }}>
         <span style={{ color: "white" }}>
           蜀ICP备2021031394号
         </span>
