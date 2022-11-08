@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, createRef } from 'react'
 import { useNavigate } from "react-router-dom";
 import { Col, List, Row, Tree, Card, Button, Image, Modal, message, Input, Tag, Select } from 'antd'
 import { LikeOutlined, StarOutlined, DownloadOutlined } from '@ant-design/icons';
 import type { DataNode } from 'antd/es/tree';
+import type { InputRef } from 'antd'
+
 import {
     getFamilyCategoryFetch,
     getFamilyPageByKeywordFetch,
@@ -11,6 +13,8 @@ import {
     getFamilyFileByIdFetch
 } from '../services/family'
 import { Family } from "../models/family";
+import './index.css'
+
 
 const { Meta } = Card;
 const { Search } = Input;
@@ -34,6 +38,8 @@ function mockdatas() {
     return families;
 }
 
+
+
 function Library() {
 
     const navigate = useNavigate();
@@ -45,6 +51,8 @@ function Library() {
     const [activeFamily, setActiveFamily] = useState<Family | undefined>(undefined);
     const [searchValue, setSearchValue] = useState<string | undefined>(undefined);
     const [filters, setFilters] = useState<string[]>([]);
+    const inputRef = createRef<InputRef>();
+    const [inputValue, setInputValue] = useState<string>('');
 
     async function getFamilyCategories() {
         let httpResponse = await getFamilyCategoryFetch();
@@ -101,7 +109,14 @@ function Library() {
         }
     }
 
+    //TODO:更新过滤的族
     const handleClose = (removedTag: string) => {
+        if (removedTag === searchValue) {
+            setSearchValue(undefined);
+            // if (inputRef && inputRef.current && inputRef.current.input) {
+            //     inputRef.current.input.value = ''
+            // }
+        }
         const newTags = filters.filter(tag => tag !== removedTag);
         setFilters(newTags);
     };
@@ -127,26 +142,35 @@ function Library() {
 
     const tagChild = filters.map(mapTags);
 
+    //翻页获取族
     useEffect(() => {
-        getFamilyCategories();
         getFamilyPageByKeyword(undefined, pageIndex, 30);
     }, [pageIndex])
 
+    //获取组类别
+    useEffect(() => {
+        getFamilyCategories();
+    }, [])
+
     return (
-        <div style={{ minHeight: "1000px", padding: "40px 100px" }}>
+        <div className='libraryContainer'>
             <Row>
                 <Col span={3}>
                     <Tree
                         showLine={true}
                         treeData={treeDatas}
                         onSelect={(key, info) => {
-                            const title = info.node.title?.toString() as string
+                            var node = info.node;
+                            var title = node.title?.toString() as string
                             if (searchValue) {
                                 var newFilters = [searchValue]
                                 setFilters([...newFilters, title])
                             } else {
                                 setFilters([title])
                             }
+
+                            getFamilyPageByCategory(Number(key[0]), pageIndex, 30);
+
                         }}
                     />
                 </Col>
@@ -154,25 +178,29 @@ function Library() {
                 <Col span={20}>
                     <div>
                         <Search
+                            ref={inputRef}
                             style={{ width: "20%" }}
                             enterButton
+                            allowClear
                             maxLength={16}
-                            placeholder="输入要搜索的族" onSearch={(value) => {
+                            placeholder="输入要搜索的族"
+                            onSearch={(value) => {
                                 setSearchValue(value)
                                 setFilters([value])
-                            }} />
+                            }}
+                        />
                     </div>
                     <div style={{ marginTop: "20px" }}>
                         <span style={{ marginBottom: 16 }}>
                             {tagChild}
                         </span>
-                        <span style={{ marginLeft: "40px" }}>
-                            <Button style={{ display: "none" }}>
-                                清空筛选
-                            </Button>
-                        </span>
+                        <Button style={{ display: "inline-block" }} onClick={() => {
+                            setFilters([]);
+                        }} >
+                            清空筛选
+                        </Button>
                         <span style={{ marginLeft: "40px", width: "40%", position: "absolute", right: "0px" }}>
-                            <Select style={{ width: "20%" }}
+                            <Select style={{ width: "20%", display: "inline-block" }}
                                 value="name"
                                 options={
                                     [

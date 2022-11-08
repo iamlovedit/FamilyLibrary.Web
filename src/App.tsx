@@ -32,7 +32,7 @@ function App() {
       <Header style={{ position: 'fixed', zIndex: 9999, width: '100%', background: "#fff", border: "1px solid #f0f0f0" }}>
         <div>
           <div className='iconContainer'>
-            111
+
           </div>
           <div className='navigateContainer' >
             <Menu
@@ -69,7 +69,7 @@ function App() {
         </div>
       </Header>
       <Content style={{ marginTop: 64, background: "white" }}>
-        <div style={{ minHeight: 1200, width: "80%", margin: "auto" }}>
+        <div className='contentContainer'>
           {elements}
         </div>
       </Content>
@@ -78,7 +78,7 @@ function App() {
           蜀ICP备2021031394号
         </span>
       </Footer>
-    </Layout>
+    </Layout >
   )
 }
 export default App;

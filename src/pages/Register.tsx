@@ -1,11 +1,12 @@
 import React from 'react'
 import { Button, Image, Checkbox, Form, Input } from "antd";
+import './index.css'
 
 function Register() {
 
 
     return (
-        <div>
+        <div className='registerContainer'>
             <Form
                 name="basic"
                 labelCol={{ span: 8 }}

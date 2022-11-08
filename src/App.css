@@ -18,3 +18,9 @@
     float:left;
     right: 10%;
 }
+
+.contentContainer{
+    margin: auto;
+    min-height: 1200px;
+    width: 80%;
+}

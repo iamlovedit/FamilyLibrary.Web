@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Image, Checkbox, Form, Input } from "antd";
 import { useNavigate } from 'react-router-dom';
+import './index.css'
 
 function Login() {
     const navigate = useNavigate();
