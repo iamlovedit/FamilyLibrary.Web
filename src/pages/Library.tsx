@@ -50,9 +50,9 @@ function Library() {
     const [familyVersions, setFamilyVersions] = useState<number[] | undefined>(undefined);
     const [activeFamily, setActiveFamily] = useState<Family | undefined>(undefined);
     const [searchValue, setSearchValue] = useState<string | undefined>(undefined);
+    const [orderValue, setOrderValue] = useState<string>("name");
     const [filters, setFilters] = useState<string[]>([]);
     const inputRef = createRef<InputRef>();
-    const [inputValue, setInputValue] = useState<string>('');
 
     async function getFamilyCategories() {
         let httpResponse = await getFamilyCategoryFetch();
@@ -113,9 +113,6 @@ function Library() {
     const handleClose = (removedTag: string) => {
         if (removedTag === searchValue) {
             setSearchValue(undefined);
-            // if (inputRef && inputRef.current && inputRef.current.input) {
-            //     inputRef.current.input.value = ''
-            // }
         }
         const newTags = filters.filter(tag => tag !== removedTag);
         setFilters(newTags);
@@ -147,7 +144,7 @@ function Library() {
         getFamilyPageByKeyword(undefined, pageIndex, 30);
     }, [pageIndex])
 
-    //获取组类别
+    //获取族类别
     useEffect(() => {
         getFamilyCategories();
     }, [])
@@ -168,9 +165,7 @@ function Library() {
                             } else {
                                 setFilters([title])
                             }
-
                             getFamilyPageByCategory(Number(key[0]), pageIndex, 30);
-
                         }}
                     />
                 </Col>
@@ -182,6 +177,7 @@ function Library() {
                             style={{ width: "20%" }}
                             enterButton
                             allowClear
+                            showCount
                             maxLength={16}
                             placeholder="输入要搜索的族"
                             onSearch={(value) => {
@@ -200,8 +196,14 @@ function Library() {
                             清空筛选
                         </Button>
                         <span style={{ marginLeft: "40px", width: "40%", position: "absolute", right: "0px" }}>
-                            <Select style={{ width: "20%", display: "inline-block" }}
-                                value="name"
+                            <Select
+                                style={{ width: "20%", display: "inline-block" }}
+                                value={orderValue}
+
+                                onChange={(value) => {
+                                    setOrderValue(value);
+                                }}
+
                                 options={
                                     [
                                         {
